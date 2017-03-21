@@ -9,9 +9,10 @@
 // | Author: Jokin <327928971@qq.com>
 // +----------------------------------------------------------------------
 /*
-** Version: 2.0.3.1603
+** Version: 2.0.3.2102
 ** Issue:
-**      1、修复画布大小算法错误问题
+**      1、修正画布宽度算法
+**      2、修正部分注释
 */
 // IO Laungher
   // Notice:运营时请将Debug调至false！！！
@@ -22,35 +23,41 @@
     header('Content-Type: image/png;');
   }
 // 用户设置
-  $text = "1234\n12345678\n123\n12345678";   // 欲输出文本
+  $text = "1234567\n12345678\n123\n1234567";   // 欲输出文本
 //动态设置
   $col = 8;                       // 每行最高数量
-  $offset_left = 50;
-  $offset_right = 50;
-  $offset_top = 50;
-  $offset_bottom = 50;
+  $offset_left = 0;
+  $offset_right = 0;
+  $offset_top = 0;
+  $offset_bottom = 0;
   $in_h = 25;                                 // 高度差（垂直偏移）
   $in_w = 35;                                 // 宽度差（水平偏移）
   $font = 'fonts/msyh.ttf';
 // 算法
   $strlen = mb_strlen(str_replace(EOF,"",$text),"utf-8"); // 计算文本长度
   $text = explode(EOF,$text);
-  $row = getrow($text,$col,$strlen);                      // 计算真实行数
+  $row = getrow($text,$col);                      // 计算真实行数
   $inverse_h = 165-$in_h;
   $inverse_w = 80-$in_w;
 // 创建主画布
-  $img_w = $offset_left+$offset_right                                         // offset
-          +80+($col-1)*$inverse_w
-          +($row-1)*$in_w;
-  ;
+  // $img_w = $offset_left+$offset_right                                         // offset
+  //         +80+($col-1)*$inverse_w
+  //         +($row-1)*$in_w;
+  // ;
+  $img_w = getwidth($row,$col,$in_w,$in_h,$inverse_w,$inverse_h,$offset_left,$offset_top,$text)+80;
+  $img_r = mb_strlen( end($text), "utf-8" ) % $col;
+  $img_h_fix = $img_r == 0 ? 0 : ($col - $img_r)*$in_h;
   $img_h = $offset_top+$offset_bottom                                         // offset
           +165+($col-1)*$in_h
-          +($row-1)*$in_h*2;
+          +($row-1)*$in_h*2
+          -$img_h_fix;
   ;
 //创建画布
   $image = imagecreatetruecolor($img_w,$img_h);
 //画布背景
-  imagefill($image,0,0,imagecolorAllocate($image,0,0,255));
+  imagefill($image,0,0,imagecolorAllocate($image,255,255,255));
+// 设置透明
+  imagecolortransparent($image,imagecolorAllocateAlpha($image,255,255,255,127));
 //字牌文本颜色
   $str_color = imagecolorAllocate($image,24,14,0);
 // 算法调整器
@@ -80,19 +87,21 @@
     $image_in = createTextImg($char ,$str_color ,$font);
   //随机背景颜色
     //imagefill($image_in,0,0,imagecolorAllocate($image_in,rand(0,255),rand(0,255),rand(0,255)));
-    $tl_left = ($row-$in_row)*$in_w;  //左·行偏移量
-    $te_left = ($in_col-1)*$inverse_w;  //左·单个偏移
-    $te_top = ($in_col-1)*$in_h+($in_row-1)*2*$in_h; //上·单个偏移
-  // x轴位置：左留空值+左行动态偏移+左列动态偏移
-    $x = $offset_left+$tl_left+$te_left;
-  // y轴位置：顶留空值+顶列动态偏移
-    $y = $offset_top+$te_top;
-    // echo $i."|".$x." | ".$y."<br />";
+    // $tl_left = ($row-$in_row)*$in_w;  //左·行偏移量
+    // $te_left = ($in_col-1)*$inverse_w;  //左·单个偏移
+    // $te_top = ($in_col-1)*$in_h+($in_row-1)*2*$in_h; //上·单个偏移
+    // // x轴位置：左留空值+左行动态偏移+左列动态偏移
+    // $x = $offset_left+$tl_left+$te_left;
+    // // y轴位置：顶留空值+顶列动态偏移
+    // $y = $offset_top+$te_top;
+    $position = getposition($row,$col,$in_w,$in_h,$inverse_w,$inverse_h,$offset_left,$offset_top,$in_row,$in_col);
+    $x = $position['x'];
+    $y = $position['y'];
   // 复制文字画布到主画布
     imagecopy($image,$image_in,$x,$y,0,0,80,165);
   // 释放临时资源
     imagedestroy($image_in);
-    // imagepng($image,"./test/{$i}.png");
+    imagepng($image,"./test/{$i}.png");
   }
   if( IS_DEBUG == false){
     imagepng($image);
@@ -148,11 +157,11 @@
 
   /*
   ** 获取真实行数
-  ** @param  text string
+  ** @param  text array
   ** @param  col  int
   ** @return int
   */
-  function getrow($text,$col,$strlen){
+  function getrow($text,$col){
     $l = 0; // 初始化当前行数
     $p = 0; // 初始化当前位置
     for($i = 0; $i < count($text); $i++){
@@ -167,4 +176,67 @@
     }
     return $l;
   }
+
+  /*
+  ** 获取画布真实宽度
+  ** @param  text array
+  ** @param  col int
+  ** @return int
+  */
+  function getwidth($row,$col,$in_w,$in_h,$inverse_w,$inverse_h,$offset_left,$offset_top,$text){
+    $width = 0; // 最宽值
+    $l = 0;     // 当前行
+    $p = 0;     // 当前位置
+    for($i = 0; $i < count($text); $i++){
+      $sl = mb_strlen($text[$i],"utf-8");  // 当前array[i]中的文本长度
+      // 基本行数计算
+      $temp_l = ceil($sl/$col);  // 增加行数
+      // 位置判断
+      if($temp_l == 1){
+        $p = mb_strlen($text[$i],"utf-8");  //最大位置
+        $w = getposition($row,$col,$in_w,$in_h,$inverse_w,$inverse_h,$offset_left,$offset_top,$l + 1,$p);
+        if($w['x'] > $width){
+          $width = $w['x'];
+          // echo "l:".($l+1)."-w:".$width."<br />";
+        }
+      }else{
+        $p = 8;  //最大位置
+        $w = getposition($row,$col,$in_w,$in_h,$inverse_w,$inverse_h,$offset_left,$offset_top,$l + 1,$p);
+        if($w['x'] > $width){
+          $width = $w['x'];
+          // echo "l:".($l+1)."-w:".$width."<br />";
+        }
+      }
+      $l += $temp_l;
+      // 高级换行计算
+      $p = $sl % $col;
+      if( $p == 0 && !isset($text[$i]) ){
+        $l -- ;
+      }
+
+    }
+    return $width;
+  }
+
+  /*
+  ** 位置计算
+  ** @param  in_row  int 当前行
+  ** @param  in_col  int 当前列
+  ** @return array
+  */
+  function getposition($row,$col,$in_w,$in_h,$inverse_w,$inverse_h,$offset_left,$offset_top,$in_row,$in_col){
+    $tl_left = ($row-$in_row)*$in_w;  //左·行偏移量
+    $te_left = ($in_col-1)*$inverse_w;  //左·单个偏移
+    $te_top = ($in_col-1)*$in_h+($in_row-1)*2*$in_h; //上·单个偏移
+    // x轴位置：左留空值+左行动态偏移+左列动态偏移
+    $x = $offset_left+$tl_left+$te_left;
+    // y轴位置：顶留空值+顶列动态偏移
+    $y = $offset_top+$te_top;
+    $p = array(
+      "x" =>  $x,
+      "y" =>  $y
+    );
+    return $p;
+  }
+
 ?>
