@@ -9,7 +9,7 @@
 // | Author: Jokin <327928971@qq.com>
 // +----------------------------------------------------------------------
 /*
-** Version: 2.0.3.2102
+** Version: 2.0.3.2103
 ** Issue:
 **      1、修正画布宽度算法
 **      2、修正部分注释
@@ -101,7 +101,9 @@
     imagecopy($image,$image_in,$x,$y,0,0,80,165);
   // 释放临时资源
     imagedestroy($image_in);
-    imagepng($image,"./test/{$i}.png");
+    if( IS_DEBUG == true){
+      imagepng($image,"./test/{$i}.png");
+    }
   }
   if( IS_DEBUG == false){
     imagepng($image);
