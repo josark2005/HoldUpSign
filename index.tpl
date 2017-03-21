@@ -18,13 +18,13 @@
         <textarea style="width:100%" name="t" rows="3" placeholder="请在这里输入想要生成的文字！"></textarea>
         <button type="submit">生成</button>
       </form>
-      <img src="./index.png" alt="图片" />
+      <img src="./index.png" alt="图片" width="100%" />
       <div class="footer" style="margin-top:10px;">
         <small style="color:grey;">本程序由Jokin制作，仅供学习！</small>
         <hr />
         <h5>源码下载</h5>
+        <a href="https://coding.net/u/Jokin/p/IMG-HoldUpSign/git">Coding代码托管（推荐）</a> |
         <a href="./IMG-HoldUpSign.zip">本地下载</a>
-        <a href="https://coding.net/u/Jokin/p/IMG-HoldUpSign/git">Coding</a>
       </div>
     </div>
   </body>
