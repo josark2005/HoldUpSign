@@ -21,6 +21,10 @@
       <img src="./index.png" alt="图片" />
       <div class="footer" style="margin-top:10px;">
         <small style="color:grey;">本程序由Jokin制作，仅供学习！</small>
+        <hr />
+        <h5>源码下载</h5>
+        <a href="./IMG-HoldUpSign.zip">本地下载</a>
+        <a href="https://coding.net/u/Jokin/p/IMG-HoldUpSign/git">Coding</a>
       </div>
     </div>
   </body>
