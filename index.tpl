@@ -23,8 +23,8 @@
         <small style="color:grey;">本程序由Jokin制作，仅供学习！</small>
         <hr />
         <h5>源码下载</h5>
-        <a href="https://coding.net/u/Jokin/p/IMG-HoldUpSign/git">Coding代码托管（推荐）</a> |
-        <a href="./IMG-HoldUpSign.zip">本地下载</a>
+        <a target="_blank" href="https://coding.net/u/Jokin/p/IMG-HoldUpSign/git">Coding代码托管（推荐）</a> |
+        <a target="_blank" href="http://p1.cola2016.top/IMG-HoldUpSign.zip">本地下载</a>
       </div>
     </div>
   </body>
