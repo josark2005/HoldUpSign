@@ -18,7 +18,7 @@
         <textarea style="width:100%" name="t" rows="3" placeholder="请在这里输入想要生成的文字！"></textarea>
         <button type="submit">生成</button>
       </form>
-      <img src="./index.png" alt="图片" width="100%" />
+      <img src="./index.png" alt="图片" width="100%" style="max-width:500px;" />
       <div class="footer" style="margin-top:10px;">
         <small style="color:grey;">本程序由Jokin制作，仅供学习！</small>
         <hr />

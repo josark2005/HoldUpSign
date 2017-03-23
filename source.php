@@ -9,7 +9,7 @@
 // | Author: Jokin <327928971@qq.com>
 // +----------------------------------------------------------------------
 /*
-** Version: 2.0.3.2202
+** Version: 2.0.3.2301
 ** Issue:
 **      1、修正画布高度、宽度算法
 **      2、优化代码布局
@@ -22,7 +22,7 @@
     header('Content-Type: image/png;');
   }
   // 用户设置
-  $text = "1234\n12345678\n12345678\n123456";   // 欲输出文本
+  $text = "这里填写需要输出的文本";   // 欲输出文本
   //动态设置
   $col = 8;                       // 每行最高数量
   $offset_left = 0;
@@ -39,19 +39,8 @@
   $inverse_h = 165-$in_h;
   $inverse_w = 80-$in_w;
   // 创建主画布
-  // $img_w = $offset_left+$offset_right                                         // offset
-  //         +80+($col-1)*$inverse_w
-  //         +($row-1)*$in_w;
-  // ;
   $img_p = getwidthAheight($row,$col,$in_w,$in_h,$inverse_w,$inverse_h,$offset_left,$offset_top,$text);
   $img_w = $img_p['w'] + 80 + $offset_right;
-  // $img_r = mb_strlen( end($text), "utf-8" ) % $col;
-  // $img_h_fix = $img_r == 0 ? 0 : ($col - $img_r)*$in_h;
-  // $img_h = $offset_top+$offset_bottom                                         // offset
-  //         +165+($col-1)*$in_h
-  //         +($row-1)*$in_h*2
-  //         -$img_h_fix;
-  // ;
   $img_h = $img_p['h'] + 165 + $offset_bottom;
   // 创建画布
   $image = imagecreatetruecolor($img_w,$img_h);
@@ -88,13 +77,6 @@
     $image_in = createTextImg($char ,$str_color ,$font);
     //随机背景颜色
     //imagefill($image_in,0,0,imagecolorAllocate($image_in,rand(0,255),rand(0,255),rand(0,255)));
-    // $tl_left = ($row-$in_row)*$in_w;  //左·行偏移量
-    // $te_left = ($in_col-1)*$inverse_w;  //左·单个偏移
-    // $te_top = ($in_col-1)*$in_h+($in_row-1)*2*$in_h; //上·单个偏移
-    // // x轴位置：左留空值+左行动态偏移+左列动态偏移
-    // $x = $offset_left+$tl_left+$te_left;
-    // // y轴位置：顶留空值+顶列动态偏移
-    // $y = $offset_top+$te_top;
     $position = getposition($row,$col,$in_w,$in_h,$inverse_w,$inverse_h,$offset_left,$offset_top,$in_row,$in_col);
     $x = $position['x'];
     $y = $position['y'];
@@ -119,9 +101,9 @@
 ** @return image_in
 */
   function createTextImg($str,$str_color,$font){
-  //创建子画布
+    //创建子画布
     $image_in = imagecreatefrompng('images/QP4a5rvW_'.rand(0, 40).'.png');
-  //文字填充
+    //文字填充
     imageTTFtext($image_in,19,-28,23,30,$str_color,$font,$str);
     return $image_in;
   }
@@ -189,9 +171,11 @@
   function getwidthAheight($row,$col,$in_w,$in_h,$inverse_w,$inverse_h,$offset_left,$offset_top,$text){
     $width = 0;  // 最宽值
     $height = 0; // 最高值
-    $l = 1;     // 当前行
+    $l = 0;     // 当前行
     $p = 1;     // 当前位置
-    for($i = 0; $i < count($text); $i++){
+    $c = count($text);
+    //-for
+    for($i = 0; $i < $c; $i++){
       $sl = mb_strlen($text[$i],"utf-8");  // 当前array[i]中的文本长度
       // 基本行数计算
       $temp_l = ceil($sl/$col);  // 增加行数
@@ -200,34 +184,37 @@
       if( $p == 0 && !isset($text[$i]) ){
         $temp_l -- ;
       }
-      // 位置判断
-      if($temp_l == 1){
-        $p = mb_strlen($text[$i],"utf-8");  //最大位置
-        $w = getposition($row,$col,$in_w,$in_h,$inverse_w,$inverse_h,$offset_left,$offset_top,$l,$p);
-        if($w['x'] > $width){
-          $width = $w['x'];
-        }
-        if($w['y'] > $height){
-          $height = $w['y'];
-        }
-      }else if($temp_l != 0){
-        $p = 8;  //最大位置
-        $w = getposition($row,$col,$in_w,$in_h,$inverse_w,$inverse_h,$offset_left,$offset_top,$l,$p);
-        if($w['x'] > $width){
-          $width = $w['x'];
-        }
-        if($w['y'] > $height){
-          $height = $w['y'];
+      // 循环计算各行末尾
+      for($t = 0; $t < $temp_l; $t++){
+        $l ++;  //修改当前行
+        // 位置判断
+        if($temp_l == 1){
+          $p = mb_strlen($text[$i],"utf-8");  //最大位置
+          $w = getposition($row,$col,$in_w,$in_h,$inverse_w,$inverse_h,$offset_left,$offset_top,$l,$p);
+          if($w['x'] > $width){
+            $width = $w['x'];
+          }
+          if($w['y'] > $height){
+            $height = $w['y'];
+          }
+        }else if($temp_l != 0){
+          if($t < $temp_l-1 ){
+            $p = 8;  //最大位置
+          }else{
+            $p = $sl % $col;
+          }
+          $w = getposition($row,$col,$in_w,$in_h,$inverse_w,$inverse_h,$offset_left,$offset_top,$l,$p);
+          if($w['x'] > $width){
+            $width = $w['x'];
+          }
+          if($w['y'] > $height){
+            $height = $w['y'];
+          }
         }
       }
-      $l += $temp_l;
-      // 高级换行计算
-      $p = $sl % $col;
-      if( $p == 0 && !isset($text[$i]) ){
-        $l -- ;
-      }
-
+      //
     }
+    //-forEnd
     $po = array(
       "w" => $width,
       "h" => $height
