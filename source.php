@@ -9,10 +9,9 @@
 // | Author: Jokin <327928971@qq.com>
 // +----------------------------------------------------------------------
 /*
-** Version: 2.0.3.2301
+** Version: 2.0.3.2302
 ** Issue:
-**      1、修正画布高度、宽度算法
-**      2、优化代码布局
+**      1、修正最后一行长度为col时算法归零的错误
 */
   /* Notice:运营时请将Debug调至false！！！ */
   define("IS_DEBUG",false);  // 是否开启调试模式
@@ -201,7 +200,7 @@
           if($t < $temp_l-1 ){
             $p = 8;  //最大位置
           }else{
-            $p = $sl % $col;
+            $p = ($sl % $col == 0) ? 8 : $sl % $col ;
           }
           $w = getposition($row,$col,$in_w,$in_h,$inverse_w,$inverse_h,$offset_left,$offset_top,$l,$p);
           if($w['x'] > $width){
