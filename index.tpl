@@ -31,7 +31,10 @@
         </p>
         <hr />
         <h5>源码下载</h5>
-        <a target="_blank" href="https://coding.net/u/Jokin/p/IMG-HoldUpSign/git">Coding代码托管（推荐）</a> |
+        <img src="https://img.shields.io/github/tag/jokin1999/HoldUpSign.svg?style=flat-square" alt="shield" />
+        <br />
+        <a target="_blank" href="https://github.com/jokin1999/HoldUpSign">Github（推荐）</a> |
+        <a target="_blank" href="https://coding.net/u/Jokin/p/IMG-HoldUpSign/git">Coding代码托管</a> |
         <a target="_blank" href="IMG-HoldUpSign.zip">本地下载</a>
       </div>
     </div>
