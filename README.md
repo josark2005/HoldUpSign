@@ -1,4 +1,8 @@
-#IMG-HoldUpSign
+# IMG-HoldUpSign
+
+
+[![GitHub Tag](https://img.shields.io/github/tag/jokin1999/HoldUpSign.svg?style=flat-square)](https://github.com/jokin1999/HoldUpSign)
+[![GitHub License](https://img.shields.io/dub/l/vibe-d.svg)](https://raw.githubusercontent.com/jokin1999/HoldUpSign/master/LICENSE)
 
 `Author: Jokin`
 
@@ -9,10 +13,3 @@
 > source.php为源代码文件
 
 > index.php为运行文件
-
-
-###更新日志
-
-#####本项目更新日志请查看源代码头注释部分
-
----
